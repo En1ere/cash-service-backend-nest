@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import cookieParser from 'cookie-parser';
-import { config } from "dotenv"
 import { join } from 'path';
 import { NestExpressApplication } from "@nestjs/platform-express";
+import { config } from "dotenv"
 config();
 
 async function bootstrap() {
@@ -26,4 +26,4 @@ async function bootstrap() {
 
     await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap().then(r => {});
+bootstrap().then();

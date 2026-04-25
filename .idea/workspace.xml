@@ -4,20 +4,32 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa77a33b-1794-4aa2-84cb-8a825f31de5b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/enums/category-type.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/transaction-type.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/user-gender.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/alert.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/item-category.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/item.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/message.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/news.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/payment-details.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/payment-method.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/refresh-tokens.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/transaction.entity.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shared/models/user.entity.ts" afterDir="false" />
+    <list default="true" id="fa77a33b-1794-4aa2-84cb-8a825f31de5b" name="Changes" comment="init + models">
+      <change afterPath="$PROJECT_DIR$/db/data-source.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auth/auth.guard.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auth/dto/refresh-token.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auth/dto/sign-in.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auth/dto/sign-response.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auth/dto/sign-up.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/users/dto/user.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/utils.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/uuid.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/app.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/app.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/app.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/app.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/models/alert.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/models/alert.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/models/message.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/models/message.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/models/news.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/models/news.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/models/refresh-tokens.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/models/refresh-tokens.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/models/user.entity.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/models/user.entity.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/users.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/users.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/users.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/users.module.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,21 +46,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "En1ere"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;En1ere&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:En1ere/cash-service-backend-nest.git",
-    "accountId": "7cb5fbc1-e7f9-420a-a16a-9cda1e53b465"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:En1ere/cash-service-backend-nest.git&quot;,
+    &quot;accountId&quot;: &quot;7cb5fbc1-e7f9-420a-a16a-9cda1e53b465&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="3Co9mp8t7uMyZqS5jMnqCIiTbey" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -57,31 +69,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "go.import.settings.migrated": "true",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Projects/Repo/cash-service-backend-nest",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.EditorConfig",
-    "ts.external.directory.path": "C:\\Projects\\Repo\\cash-service-backend-nest\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Projects/Repo/cash-service-backend-nest&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.EditorConfig&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Projects\\Repo\\cash-service-backend-nest\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Projects\Repo\cash-service-backend-nest\src\app" />
@@ -102,12 +113,29 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777041216690</updated>
-      <workItem from="1777041217771" duration="9303000" />
+      <workItem from="1777041217771" duration="9345000" />
+      <workItem from="1777061715168" duration="1590000" />
+      <workItem from="1777088556857" duration="15020000" />
+      <workItem from="1777103828669" duration="4208000" />
+      <workItem from="1777108083166" duration="406000" />
     </task>
+    <task id="LOCAL-00001" summary="init + models">
+      <option name="closed" value="true" />
+      <created>1777050791435</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1777050791435</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init + models" />
+    <option name="LAST_COMMIT_MESSAGE" value="init + models" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

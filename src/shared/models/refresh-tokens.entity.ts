@@ -9,7 +9,9 @@ export class RefreshTokenEntity extends BaseEntity {
     @Column()
     expires: Date
 
-    @ManyToOne(() => UserEntity, item => item.refreshTokens)
+    @ManyToOne(() => UserEntity, item => item.refreshTokens, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn({ name: "user_id" })
-    user: UserEntity
+    userId: UserEntity
 }

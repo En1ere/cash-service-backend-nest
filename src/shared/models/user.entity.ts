@@ -1,4 +1,13 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import { EUserGender } from "../../enums/user-gender";
 import { PaymentMethodEntity } from "./payment-method.entity";
 import { TransactionEntity } from "./transaction.entity";
@@ -15,6 +24,9 @@ export class UserEntity extends BaseEntity {
     @Column()
     login: string
 
+    @Column('uuid')
+    uuid: string;
+
     @Column()
     password: string
 
@@ -24,19 +36,19 @@ export class UserEntity extends BaseEntity {
     @Column()
     name: string
 
-    @Column()
+    @Column({ nullable: true })
     lastName: string
 
-    @Column()
+    @Column({ nullable: true })
     patronymic: string
 
-    @Column()
+    @Column({ nullable: true })
     avatar: string
 
-    @Column({ enum: EUserGender })
+    @Column({ enum: EUserGender, nullable: true })
     gender: EUserGender
 
-    @Column({ name: "date_of_birth" })
+    @Column({ name: "date_of_birth", nullable: true })
     dateOfBirth: Date
 
     @CreateDateColumn({ name: "created_at" })
@@ -45,8 +57,8 @@ export class UserEntity extends BaseEntity {
     @CreateDateColumn({ name: "updated_at" })
     updatedAt: Date
 
-    @CreateDateColumn({ name: "deleted_at" })
-    deletedAt: Date
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 
     @OneToMany(() => PaymentMethodEntity, item => item.userId)
     @JoinColumn({ name: "payment_methods" })
@@ -67,6 +79,6 @@ export class UserEntity extends BaseEntity {
     @OneToMany(() => AlertEntity, item => item.userId)
     alerts: AlertEntity
 
-    @OneToMany(() => RefreshTokenEntity, (item) => item.user)
+    @OneToMany(() => RefreshTokenEntity, (item) => item.userId)
     refreshTokens: RefreshTokenEntity[]
 }

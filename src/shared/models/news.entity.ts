@@ -12,16 +12,16 @@ export class NewsEntity extends BaseEntity {
     @Column()
     content: string
 
-    @Column()
+    @Column({ nullable: true })
     image: string
 
-    @Column()
+    @Column({ nullable: true })
     link: string
 
     @Column()
     date: Date
 
-    @Column()
+    @Column({ nullable: true })
     readAt: Date
 
     @ManyToOne(() => UserEntity, item => item.news)

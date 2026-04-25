@@ -15,7 +15,7 @@ export class AlertEntity extends BaseEntity {
     @Column()
     date: Date
 
-    @Column()
+    @Column({ nullable: true })
     link: string
 
     @ManyToOne(() => UserEntity, item => item.alerts)

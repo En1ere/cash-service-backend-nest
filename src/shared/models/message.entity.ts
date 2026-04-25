@@ -12,10 +12,10 @@ export class MessageEntity extends BaseEntity {
     @Column()
     sentAt: Date
 
-    @Column()
+    @Column({ nullable: true })
     readAt: Date
 
-    @Column()
+    @Column({ nullable: true })
     deleteAt: Date
 
     @ManyToOne(() => UserEntity, item => item.outcomeMessages)
