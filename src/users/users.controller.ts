@@ -1,7 +1,6 @@
 import {Controller, Get, UseGuards, Request, Param, Delete} from '@nestjs/common';
 import { UsersService } from "./users.service";
 import { UserDto } from "./dto/user.dto";
-import { UserEntity } from "../shared/models/user.entity";
 import { AuthGuard } from "../auth/auth.guard";
 
 @Controller('users')
@@ -13,8 +12,7 @@ export class UsersController {
     @Get("me")
     @UseGuards(AuthGuard)
     async getMe(@Request() req: any): Promise<UserDto> {
-        const user = await this.service.getUserById(req.user?.id);
-        return new UserDto(user as UserEntity)
+        return await this.service.getMe(req.user?.id);
     }
 
     @Get()

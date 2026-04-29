@@ -1,6 +1,8 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from 'express';
+import { AuthException } from "../exceptions/auth.exception";
+import { ForbiddenError } from "../exceptions/forbidden.exception";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,14 +15,17 @@ export class AuthGuard implements CanActivate {
         const token = this.extractToken(request);
 
         if(!token) {
-            throw new UnauthorizedException("Need to authorize")
+            throw new AuthException('Need to authorize');
         }
 
         try {
             request['user'] = await this.jwtService.verifyAsync(token);
         }
         catch (err) {
-            throw new UnauthorizedException(err)
+            throw new ForbiddenError(
+                'Access denied',
+                err,
+            );
         }
 
         return true

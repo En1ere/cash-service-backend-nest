@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { config } from "dotenv"
+import { ResponseInterceptor } from "./interceptors/response.interceptor";
+import { AppExceptionFilter } from "./filters/app-exception.filter";
 config();
 
 async function bootstrap() {
@@ -23,6 +25,8 @@ async function bootstrap() {
     app.useStaticAssets(join(__dirname, '..', 'uploads'), {
         prefix: '/uploads/',
     });
+    app.useGlobalInterceptors(new ResponseInterceptor());
+    app.useGlobalFilters(new AppExceptionFilter());
 
     await app.listen(process.env.PORT ?? 3000);
 }

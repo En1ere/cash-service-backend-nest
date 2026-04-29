@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { MoreThan, Repository } from "typeorm";
@@ -10,6 +10,9 @@ import { SignResponseDto } from "./dto/sign-response.dto";
 import { randomBytes } from "node:crypto";
 import * as bcrypt from "bcrypt"
 import { SignInDto } from "./dto/sign-in.dto";
+import { InvalidCredentialsException } from "../exceptions/auth.exception";
+import { ConflictError } from "../exceptions/conflict.exception";
+import { ValidationError } from "../exceptions/validation.exception";
 
 @Injectable()
 export class AuthService {
@@ -21,19 +24,29 @@ export class AuthService {
     ) {}
 
     async signUp(data: SignUpDto): Promise<SignResponseDto> {
+        if (!data.email || !data.password || !data.login || !data.name) {
+            throw new ValidationError(
+                'No required data',
+                { fields: ['email', 'password', 'name', 'login'] },
+            );
+        }
+
         const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
         if(!isEmailValid) {
-            throw new BadRequestException("Invalid email")
+            throw new ValidationError(
+                'Invalid email format',
+                { field: 'email' },
+            );
         }
 
         const isLoginExist = await this.userService.getUserByLogin(data.login)
         if(isLoginExist) {
-            throw new BadRequestException("Login already exists")
+            throw new ConflictError('Username already exists');
         }
 
         const user = await this.userService.getUserByEmail(data.email)
         if(user) {
-            throw new BadRequestException("Email already exists")
+            throw new ConflictError('Email already exists');
         }
 
         const hashPass = await bcrypt.hash(data.password, 16)
@@ -51,6 +64,13 @@ export class AuthService {
     }
 
     async signIn(data: SignInDto): Promise<SignResponseDto> {
+        if (!data.identifier || !data.password) {
+            throw new ValidationError(
+                'Email and password are required',
+                { fields: ['email', 'password'] },
+            );
+        }
+
         let user: UserEntity|null;
         user = await this.userService.getUserByEmail(data.identifier)
         if (!user) {
@@ -58,18 +78,22 @@ export class AuthService {
         }
 
         if(!user) {
-            throw new BadRequestException("User not found")
+            throw new InvalidCredentialsException();
         }
 
         const isPasswordValid = await bcrypt.compare(data.password, user.password)
         if(!isPasswordValid) {
-            throw new UnauthorizedException("Invalid password")
+            throw new InvalidCredentialsException();
         }
 
         return this.getTokens(user);
     }
 
     async refreshToken(token: string): Promise<SignResponseDto> {
+        if(!token) {
+            throw new ValidationError('No token provided');
+        }
+
         const now = new Date()
         const refreshToken = await this.refreshTokenRepo.findOne({
             relations: ['user'],
@@ -80,7 +104,7 @@ export class AuthService {
         })
 
         if(!refreshToken) {
-            throw new UnauthorizedException("Invalid refresh token")
+            throw new ValidationError('Invalid token');
         }
 
         return this.getTokens(refreshToken.userId)
