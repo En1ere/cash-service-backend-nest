@@ -1,11 +1,12 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "../shared/models/user.entity";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 import { UserDto } from "./dto/user.dto";
 import { SignUpDto } from "../auth/dto/sign-up.dto";
 import { UuidService } from "../utils/uuid.service";
 import { RefreshTokenEntity } from "../shared/models/refresh-tokens.entity";
+import { NotFoundError } from "../exceptions/not-found.exception";
 
 @Injectable()
 export class UsersService {
@@ -18,61 +19,86 @@ export class UsersService {
     ) {}
 
     async getUserById(id: number) {
-        return await this.usersRepository.findOne({
+        const user:UserEntity|null = await this.usersRepository.findOne({
             where: {
                 id
             }
         })
+
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { userId: id },
+            );
+        }
+
+        return user;
     }
 
     async getUserByEmail(email: string) {
-        return await this.usersRepository.findOne({
+        const user:UserEntity|null = await this.usersRepository.findOne({
             where: {
                 email
             }
         })
+
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { email },
+            );
+        }
+
+        return user;
     }
 
     async getUserByLogin(login: string) {
-        return await this.usersRepository.findOne({
+        const user:UserEntity|null = await this.usersRepository.findOne({
             where: {
                 login
             }
         })
+
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { login },
+            );
+        }
+
+        return user;
     }
 
     async getUserByUuid(uuid: string) {
-        return await this.usersRepository.findOne({
+        const user:UserEntity|null = await this.usersRepository.findOne({
             withDeleted: true,
             where: {
                 uuid
             }
         })
+
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { uuid },
+            );
+        }
+
+        return user;
+    }
+
+    async getMe(id: number) {
+        const user:UserEntity = await this.getUserById(id);
+        return new UserDto(user as UserEntity)
     }
 
     async getAllUsers() {
-        let users:UserEntity[] = [];
-        try {
-           users = await this.usersRepository.find({ withDeleted: true })
-        }
-        catch(err) {
-            console.log(err)
-            return []
-        }
-
+        const users:UserEntity[] = await this.usersRepository.find({ withDeleted: true })
         return (users).map(user => new UserDto(user))
     }
 
     async getActiveUsers() {
-        let users:UserEntity[] = [];
-        try {
-            users = await this.usersRepository.find()
-        }
-        catch(err) {
-            console.log(err)
-            return []
-        }
-
+        const users:UserEntity[] = await this.usersRepository.find()
         return (users).map(user => new UserDto(user))
     }
 
@@ -90,9 +116,12 @@ export class UsersService {
     }
 
     async softDeleteUserByUuid(uuid: string) {
-        const user = await this.getUserByUuid(uuid)
+        const user:UserEntity = await this.getUserByUuid(uuid)
         if (!user) {
-            throw new NotFoundException('User not found')
+            throw new NotFoundError(
+                'User not found',
+                { uuid },
+            );
         }
 
         user.deletedAt = new Date();
@@ -100,12 +129,14 @@ export class UsersService {
     }
 
     async hardDeleteUserByUuid(uuid: string) {
-        const userResult = await this.usersRepository.delete({
+        const userResult:DeleteResult = await this.usersRepository.delete({
             uuid
         })
-
         if (userResult.affected === 0) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundError(
+                'User not found',
+                { uuid },
+            );
         }
 
         return { deleted: userResult.affected, success: true }

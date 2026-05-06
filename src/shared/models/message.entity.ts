@@ -1,4 +1,13 @@
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {UserEntity} from "./user.entity";
 
 @Entity("messages")
@@ -9,17 +18,27 @@ export class MessageEntity extends BaseEntity {
     @Column()
     content: string
 
-    @Column()
-    sentAt: Date
+    @Column({ default: false })
+    forwarded: boolean
 
-    @Column({ nullable: true })
+    @CreateDateColumn({ name: "create_at" })
+    createAt: Date
+
+    @Column({ name: "read_at", nullable: true })
     readAt: Date
 
-    @Column({ nullable: true })
-    deleteAt: Date
+    @UpdateDateColumn({ name: "updated_at", nullable: true })
+    updatedAt: Date;
+
+    @Column({ name: "deleted_at", nullable: true })
+    deletedAt: Date
 
     @ManyToOne(() => UserEntity, item => item.outcomeMessages)
     author: UserEntity
+
+    @ManyToOne(() => UserEntity, item => item.uuid)
+    @JoinColumn({ name: "user_uuid" })
+    userUuid: UserEntity
 
     @ManyToOne(() => UserEntity, item => item.incomeMessages)
     addressee: UserEntity
