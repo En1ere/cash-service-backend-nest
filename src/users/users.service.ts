@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "../shared/models/user.entity";
-import { DeleteResult, Repository } from "typeorm";
-import { UserDto } from "./dto/user.dto";
-import { SignUpDto } from "../auth/dto/sign-up.dto";
-import { UuidService } from "../utils/uuid.service";
-import { RefreshTokenEntity } from "../shared/models/refresh-tokens.entity";
-import { NotFoundError } from "../exceptions/not-found.exception";
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from "@nestjs/typeorm";
+import {UserEntity} from "../shared/models/user.entity";
+import {DeleteResult, Repository} from "typeorm";
+import {UserDto} from "./dto/user.dto";
+import {SignUpDto} from "../auth/dto/sign-up.dto";
+import {UuidService} from "../utils/uuid.service";
+import {RefreshTokenEntity} from "../shared/models/refresh-tokens.entity";
+import {NotFoundError} from "../exceptions/not-found.exception";
 
 @Injectable()
 export class UsersService {
@@ -36,52 +36,39 @@ export class UsersService {
     }
 
     async getUserByEmail(email: string) {
-        const user:UserEntity|null = await this.usersRepository.findOne({
+        return await this.usersRepository.findOne({
             where: {
                 email
             }
-        })
-
-        if(!user) {
-            throw new NotFoundError(
-                'User not found',
-                { email },
-            );
-        }
-
-        return user;
+        });
     }
 
     async getUserByLogin(login: string) {
-        const user:UserEntity|null = await this.usersRepository.findOne({
+        return await this.usersRepository.findOne({
             where: {
                 login
             }
-        })
-
-        return user;
+        });
     }
 
     async getUserByUuid(uuid: string) {
-        const user:UserEntity|null = await this.usersRepository.findOne({
+        return await this.usersRepository.findOne({
             withDeleted: true,
             where: {
                 uuid
             }
-        })
-
-        if(!user) {
-            throw new NotFoundError(
-                'User not found',
-                { uuid },
-            );
-        }
-
-        return user;
+        });
     }
 
     async getMe(id: number) {
         const user:UserEntity = await this.getUserById(id);
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { id },
+            );
+        }
+
         return new UserDto(user as UserEntity)
     }
 
@@ -109,7 +96,7 @@ export class UsersService {
     }
 
     async softDeleteUserByUuid(uuid: string) {
-        const user:UserEntity = await this.getUserByUuid(uuid)
+        const user:UserEntity|null = await this.getUserByUuid(uuid)
         if (!user) {
             throw new NotFoundError(
                 'User not found',
