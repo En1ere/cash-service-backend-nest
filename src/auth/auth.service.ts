@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import { MoreThan, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { RefreshTokenEntity } from "../shared/models/refresh-tokens.entity";
 import { InjectRepository} from "@nestjs/typeorm";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { UserEntity } from "../shared/models/user.entity";
 import { SignResponseDto } from "./dto/sign-response.dto";
-import { randomBytes } from "node:crypto";
 import * as bcrypt from "bcrypt"
 import { SignInDto } from "./dto/sign-in.dto";
 import { InvalidCredentialsException } from "../exceptions/auth.exception";
 import { ConflictError } from "../exceptions/conflict.exception";
 import { ValidationError } from "../exceptions/validation.exception";
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) {}
 
-    async signUp(data: SignUpDto): Promise<SignResponseDto> {
+    async signUp(data: SignUpDto, response: Response): Promise<SignResponseDto> {
         if (!data.email || !data.password || !data.login || !data.name) {
             throw new ValidationError(
                 'No required data',
@@ -60,10 +60,13 @@ export class AuthService {
 
         const userCreated = await this.userService.createUser(userPayload)
 
-        return this.getTokens(userCreated)
+        this.setTokensToCookie(response, userCreated);
+
+        // return this.getTokens(userCreated)
+        return { message: 'Signed up' };
     }
 
-    async signIn(data: SignInDto): Promise<SignResponseDto> {
+    async signIn(data: SignInDto, response: Response): Promise<SignResponseDto> {
         if (!data.identifier || !data.password) {
             throw new ValidationError(
                 'Email and password are required',
@@ -86,31 +89,62 @@ export class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        return this.getTokens(user);
+        this.setTokensToCookie(response, user);
+        // return this.getTokens(user);
+        return { message: 'Signed in' };
     }
 
-    async refreshToken(token: string): Promise<SignResponseDto> {
-        if(!token) {
-            throw new ValidationError('No token provided');
-        }
+    // async refreshToken(token: string): Promise<SignResponseDto> {
+    //     if(!token) {
+    //         throw new ValidationError('No token provided');
+    //     }
+    //
+    //     const now = new Date()
+    //     const refreshToken = await this.refreshTokenRepo.findOne({
+    //         relations: ['user'],
+    //         where: {
+    //             token,
+    //             expires: MoreThan(now)
+    //         }
+    //     })
+    //
+    //     if(!refreshToken) {
+    //         throw new ValidationError('Invalid token');
+    //     }
+    //
+    //     return this.getTokens(refreshToken.userId)
+    // }
 
-        const now = new Date()
-        const refreshToken = await this.refreshTokenRepo.findOne({
-            relations: ['user'],
-            where: {
-                token,
-                expires: MoreThan(now)
-            }
-        })
+    // async getTokens(user: UserEntity): Promise<SignResponseDto> {
+    //     const payload = {
+    //         id: user.id,
+    //         name: user.name,
+    //         email: user.email,
+    //         login: user.login
+    //     }
+    //
+    //     const refreshToken = new RefreshTokenEntity()
+    //     refreshToken.token = this.generateSecureToken()
+    //     const expires = new Date()
+    //     expires.setDate(expires.getDate() + 14)
+    //     refreshToken.expires = expires
+    //     refreshToken.userId = user
+    //
+    //     const refreshTokenCreated = await refreshToken.save()
+    //
+    //     const accessToken = await this.jwtService.signAsync(payload)
+    //     return new SignResponseDto(accessToken, refreshTokenCreated.token)
+    // }
 
-        if(!refreshToken) {
-            throw new ValidationError('Invalid token');
-        }
+    // private generateSecureToken(): string {
+    //     return randomBytes(48).toString("base64url")
+    // }
 
-        return this.getTokens(refreshToken.userId)
-    }
 
-    async getTokens(user: UserEntity): Promise<SignResponseDto> {
+    setTokensToCookie(
+        response: Response,
+        user: UserEntity,
+    ) {
         const payload = {
             id: user.id,
             name: user.name,
@@ -118,20 +152,21 @@ export class AuthService {
             login: user.login
         }
 
-        const refreshToken = new RefreshTokenEntity()
-        refreshToken.token = this.generateSecureToken()
-        const expires = new Date()
-        expires.setDate(expires.getDate() + 14)
-        refreshToken.expires = expires
-        refreshToken.userId = user
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+        const refreshToken = this.jwtService.sign(payload, { expiresIn: '14d' });
 
-        const refreshTokenCreated = await refreshToken.save()
+        response.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 15 * 60 * 1000,
+        });
 
-        const accessToken = await this.jwtService.signAsync(payload)
-        return new SignResponseDto(accessToken, refreshTokenCreated.token)
-    }
-
-    private generateSecureToken(): string {
-        return randomBytes(48).toString("base64url")
-    }
+        response.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 14 * 24 * 60 * 60 * 1000,
+        });
+    };
 }

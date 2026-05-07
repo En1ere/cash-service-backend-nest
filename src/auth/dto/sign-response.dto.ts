@@ -1,9 +1,16 @@
+// export class SignResponseDto {
+//     accessToken: string
+//     refreshToken: string
+//
+//     constructor(accessToken: string, refreshToken: string) {
+//         this.accessToken = accessToken
+//         this.refreshToken = refreshToken
+//     }
+// }
 export class SignResponseDto {
-    accessToken: string
-    refreshToken: string
+    message: string
 
-    constructor(accessToken: string, refreshToken: string) {
-        this.accessToken = accessToken
-        this.refreshToken = refreshToken
+    constructor(message: string) {
+        this.message = message
     }
 }
