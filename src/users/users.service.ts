@@ -59,13 +59,6 @@ export class UsersService {
             }
         })
 
-        if(!user) {
-            throw new NotFoundError(
-                'User not found',
-                { login },
-            );
-        }
-
         return user;
     }
 
