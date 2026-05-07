@@ -1,6 +1,6 @@
 import { UserEntity } from "../../shared/models/user.entity";
 
-export class UserDto {
+export class UserBaseDto {
     id: number;
     name: string;
     email: string;

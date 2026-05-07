@@ -2,40 +2,28 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {UserEntity} from "../shared/models/user.entity";
 import {DeleteResult, Repository} from "typeorm";
-import {UserDto} from "./dto/user.dto";
 import {SignUpDto} from "../auth/dto/sign-up.dto";
 import {UuidService} from "../utils/uuid.service";
-import {RefreshTokenEntity} from "../shared/models/refresh-tokens.entity";
 import {NotFoundError} from "../exceptions/not-found.exception";
+import {UserFullDto} from "./dto/user-full.dto";
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(RefreshTokenEntity)
-        private readonly refreshTokenRepository: Repository<RefreshTokenEntity>,
         @InjectRepository(UserEntity)
         private readonly usersRepository: Repository<UserEntity>,
         private readonly uuidService: UuidService
     ) {}
 
-    async getUserById(id: number) {
-        const user:UserEntity|null = await this.usersRepository.findOne({
+    async getUserById(id: number):Promise<UserEntity|null> {
+        return await this.usersRepository.findOne({
             where: {
                 id
             }
-        })
-
-        if(!user) {
-            throw new NotFoundError(
-                'User not found',
-                { userId: id },
-            );
-        }
-
-        return user;
+        });
     }
 
-    async getUserByEmail(email: string) {
+    async getUserByEmail(email: string):Promise<UserEntity|null> {
         return await this.usersRepository.findOne({
             where: {
                 email
@@ -43,7 +31,7 @@ export class UsersService {
         });
     }
 
-    async getUserByLogin(login: string) {
+    async getUserByLogin(login: string):Promise<UserEntity|null> {
         return await this.usersRepository.findOne({
             where: {
                 login
@@ -51,7 +39,7 @@ export class UsersService {
         });
     }
 
-    async getUserByUuid(uuid: string) {
+    async getUserByUuid(uuid: string):Promise<UserEntity|null> {
         return await this.usersRepository.findOne({
             withDeleted: true,
             where: {
@@ -60,8 +48,8 @@ export class UsersService {
         });
     }
 
-    async getMe(id: number) {
-        const user:UserEntity = await this.getUserById(id);
+    async getMe(id: number):Promise<UserFullDto|null> {
+        const user:UserEntity|null = await this.getUserById(id);
         if(!user) {
             throw new NotFoundError(
                 'User not found',
@@ -69,17 +57,29 @@ export class UsersService {
             );
         }
 
-        return new UserDto(user as UserEntity)
+        return new UserFullDto(user as UserEntity)
     }
 
-    async getAllUsers() {
+    async getUser(uuid: string): Promise<UserFullDto> {
+        const user:UserEntity|null = await this.getUserByUuid(uuid);
+        if(!user) {
+            throw new NotFoundError(
+                'User not found',
+                { uuid },
+            );
+        }
+
+        return new UserFullDto(user as UserEntity)
+    }
+
+    async getAllUsers():Promise<UserFullDto[]> {
         const users:UserEntity[] = await this.usersRepository.find({ withDeleted: true })
-        return (users).map(user => new UserDto(user))
+        return (users).map(user => new UserFullDto(user))
     }
 
-    async getActiveUsers() {
+    async getActiveUsers():Promise<UserFullDto[]> {
         const users:UserEntity[] = await this.usersRepository.find()
-        return (users).map(user => new UserDto(user))
+        return (users).map(user => new UserFullDto(user))
     }
 
     async createUser(payload: SignUpDto): Promise<UserEntity> {
@@ -95,7 +95,7 @@ export class UsersService {
         return await user.save()
     }
 
-    async softDeleteUserByUuid(uuid: string) {
+    async softDeleteUserByUuid(uuid: string): Promise<UserEntity> {
         const user:UserEntity|null = await this.getUserByUuid(uuid)
         if (!user) {
             throw new NotFoundError(
@@ -108,7 +108,7 @@ export class UsersService {
         return await this.usersRepository.save(user);
     }
 
-    async hardDeleteUserByUuid(uuid: string) {
+    async hardDeleteUserByUuid(uuid: string): Promise<{deleted: number, success: boolean}> {
         const userResult:DeleteResult = await this.usersRepository.delete({
             uuid
         })
@@ -119,6 +119,6 @@ export class UsersService {
             );
         }
 
-        return { deleted: userResult.affected, success: true }
+        return { deleted: userResult.affected || 0, success: true }
     }
 }
