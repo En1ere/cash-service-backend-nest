@@ -157,11 +157,13 @@ export class AuthService {
 
         response.cookie('accessToken', accessToken, {
             httpOnly: true,
+            sameSite: 'lax',
             maxAge: 15 * 60 * 1000,
         });
 
         response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
+            sameSite: 'lax',
             maxAge: 14 * 24 * 60 * 60 * 1000,
         });
     };
