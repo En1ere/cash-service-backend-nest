@@ -9,6 +9,7 @@ import { UtilsModule } from "../utils/utils.module";
 import { ConfigModule } from '@nestjs/config';
 import { JwtCoreModule } from "../jwt/jwt.module";
 import { config } from 'dotenv';
+import {BlacklistModule} from "../blacklist/blacklist.module";
 config({ path: '.env' });
 
 @Module({
@@ -18,6 +19,7 @@ config({ path: '.env' });
         TypeOrmModule.forRoot(dataSourceOptions),
         UsersModule,
         AuthModule,
+        BlacklistModule,
         UtilsModule
     ],
     controllers: [AppController],

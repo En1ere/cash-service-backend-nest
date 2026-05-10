@@ -1,5 +1,5 @@
 import { UserEntity } from "../../shared/models/user.entity";
-import {EUserGender} from "../../enums/user-gender";
+import {EUserGender} from "../../types/enums/UserGenderType";
 
 export class UserFullDto {
     login: string;

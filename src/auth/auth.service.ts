@@ -13,6 +13,7 @@ import { InvalidCredentialsException } from "../exceptions/auth.exception";
 import { ConflictError } from "../exceptions/conflict.exception";
 import { ValidationError } from "../exceptions/validation.exception";
 import {randomBytes} from "node:crypto";
+import {BlacklistService} from "../blacklist/blacklist.service";
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,8 @@ export class AuthService {
         @InjectRepository(RefreshTokenEntity)
         private readonly refreshTokenRepo: Repository<RefreshTokenEntity>,
         private readonly userService: UsersService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly blacklistService: BlacklistService
     ) {}
 
     async signUp(data: SignUpDto): Promise<SignResponseDto> {
@@ -87,6 +89,33 @@ export class AuthService {
         }
 
         return this.getTokens(user);
+    }
+
+    async signOut(uuid: string, authorizationHeader: string): Promise<null> {
+        if (uuid.length < 1 || authorizationHeader.length < 1) {
+            throw new ValidationError('No uuid provided');
+        }
+
+        const user: UserEntity|null = await this.userService.getUserByUuid(uuid)
+
+        if(!user) {
+            throw new ValidationError(`Not found user with uuid: ${uuid}`);
+        }
+
+        const refreshTokens: RefreshTokenEntity[] = await this.refreshTokenRepo.find({
+            where: {
+                userId: user
+            }
+        });
+        for (const token of refreshTokens) {
+            await token.remove();
+        }
+
+        const accessToken = authorizationHeader.split(' ')[1];
+
+        await this.blacklistService.addToBlacklist(accessToken);
+
+        return null;
     }
 
     async refreshToken(token: string): Promise<SignResponseDto> {

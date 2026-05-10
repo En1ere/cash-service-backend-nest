@@ -1,6 +1,6 @@
 import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {UserEntity} from "./user.entity";
-import {ETransactionType} from "../../enums/transaction-type";
+import {ETransactionType} from "../../types/enums/TransactionType";
 import {PaymentMethodEntity} from "./payment-method.entity";
 import {ItemEntity} from "./item.entity";
 

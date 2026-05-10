@@ -8,7 +8,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
-import { EUserGender } from "../../enums/user-gender";
+import { EUserGender } from "../../types/enums/UserGenderType";
 import { PaymentMethodEntity } from "./payment-method.entity";
 import { TransactionEntity } from "./transaction.entity";
 import { RefreshTokenEntity } from "./refresh-tokens.entity";

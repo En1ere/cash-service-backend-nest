@@ -6,6 +6,8 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { config } from "dotenv"
 import { ResponseInterceptor } from "./interceptors/response.interceptor";
 import { AppExceptionFilter } from "./filters/app-exception.filter";
+import {UuidInterceptor} from "./interceptors/uuid.interceptor";
+import {AuthMiddleware} from "./auth/auth.middleware";
 config();
 
 async function bootstrap() {
@@ -26,8 +28,9 @@ async function bootstrap() {
     app.useStaticAssets(join(__dirname, '..', 'uploads'), {
         prefix: '/uploads/',
     });
-    app.useGlobalInterceptors(new ResponseInterceptor());
+    app.useGlobalInterceptors(new ResponseInterceptor(), new UuidInterceptor());
     app.useGlobalFilters(new AppExceptionFilter());
+    app.use(AuthMiddleware);
 
     await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }

@@ -1,6 +1,6 @@
 import {BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {ItemEntity} from "./item.entity";
-import {ECategoryType} from "../../enums/category-type";
+import {ECategoryType} from "../../types/enums/CategoryType";
 
 @Entity("item_category")
 export class ItemCategoryEntity extends BaseEntity {

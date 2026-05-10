@@ -8,15 +8,18 @@ import { AuthController } from "./auth.controller";
 import { UuidService } from "../utils/uuid.service";
 import { ConfigModule } from '@nestjs/config';
 import { JwtCoreModule } from "../jwt/jwt.module";
+import {AuthMiddleware} from "./auth.middleware";
+import {BlacklistService} from "../blacklist/blacklist.service";
+import {BlacklistEntity} from "../shared/models/blacklist.entity";
 
 @Module({
     imports: [
         ConfigModule,
-        TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
+        TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity, BlacklistEntity]),
         JwtCoreModule
     ],
-    providers: [AuthService, UsersService, UuidService],
+    providers: [AuthService, UsersService, UuidService, AuthMiddleware, BlacklistService],
     controllers: [AuthController],
-    exports: [AuthService]
+    exports: [AuthService, AuthMiddleware]
 })
 export class AuthModule {}
