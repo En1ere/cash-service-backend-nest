@@ -3,11 +3,13 @@ import { JwtService } from "@nestjs/jwt";
 import { Request } from 'express';
 import { AuthException } from "../exceptions/auth.exception";
 import { ForbiddenError } from "../exceptions/forbidden.exception";
+import {BlacklistService} from "../blacklist/blacklist.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly blacklistService: BlacklistService
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -18,12 +20,17 @@ export class AuthGuard implements CanActivate {
             throw new AuthException('Need to authorize');
         }
 
+        const isBlackListed = await this.blacklistService.isBlacklisted(token);
+        if(isBlackListed) {
+            throw new AuthException('Need to authorize');
+        }
+
         try {
             request['user'] = await this.jwtService.verifyAsync(token);
         }
         catch (err) {
             throw new ForbiddenError(
-                'Access denied',
+                "Token expired",
                 err,
             );
         }

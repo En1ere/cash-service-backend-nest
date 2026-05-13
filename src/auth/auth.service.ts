@@ -92,8 +92,11 @@ export class AuthService {
     }
 
     async signOut(uuid: string, authorizationHeader: string): Promise<null> {
-        if (uuid.length < 1 || authorizationHeader.length < 1) {
+        if (uuid.length < 1) {
             throw new ValidationError('No uuid provided');
+        }
+        if (authorizationHeader.length < 1) {
+            throw new ValidationError('No token provided');
         }
 
         const user: UserEntity|null = await this.userService.getUserByUuid(uuid)
@@ -107,6 +110,7 @@ export class AuthService {
                 userId: user
             }
         });
+
         for (const token of refreshTokens) {
             await token.remove();
         }

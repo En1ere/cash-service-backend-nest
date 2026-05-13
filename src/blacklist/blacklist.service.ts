@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {BlacklistEntity} from "../shared/models/blacklist.entity";
+import {AppException} from "../exceptions/app.exception";
 
 @Injectable()
 export class BlacklistService {
@@ -11,9 +12,14 @@ export class BlacklistService {
     ) {}
 
     async addToBlacklist(token: string): Promise<void> {
-        const existingToken = await this.blacklistRepo.findOne({ where: { token } });
-        if (!existingToken) {
-            await this.blacklistRepo.insert({ token });
+        try {
+            const existingToken = await this.blacklistRepo.findOne({ where: { token } });
+            if (!existingToken) {
+                await this.blacklistRepo.insert({ token });
+            }
+        }
+        catch(err) {
+            throw new AppException(err.toString())
         }
     }
 
