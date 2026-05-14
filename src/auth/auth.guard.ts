@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from 'express';
 import { AuthException } from "../exceptions/auth.exception";
-import { ForbiddenError } from "../exceptions/forbidden.exception";
 import {BlacklistService} from "../blacklist/blacklist.service";
 
 @Injectable()
@@ -29,7 +28,7 @@ export class AuthGuard implements CanActivate {
             request['user'] = await this.jwtService.verifyAsync(token);
         }
         catch (err) {
-            throw new ForbiddenError(
+            throw new AuthException(
                 "Token expired",
                 err,
             );
