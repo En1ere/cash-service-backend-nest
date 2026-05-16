@@ -15,6 +15,11 @@ import { ValidationError } from "../exceptions/validation.exception";
 import {randomBytes} from "node:crypto";
 import {BlacklistService} from "../blacklist/blacklist.service";
 
+interface AuthResult {
+    response: SignResponseDto
+    userUuid: string
+}
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -25,7 +30,7 @@ export class AuthService {
         private readonly blacklistService: BlacklistService
     ) {}
 
-    async signUp(data: SignUpDto): Promise<SignResponseDto> {
+    async signUp(data: SignUpDto): Promise<AuthResult> {
         if (!data.email || !data.password || !data.login || !data.name) {
             throw new ValidationError(
                 'No required data',
@@ -65,7 +70,7 @@ export class AuthService {
         return this.getTokens(userCreated)
     }
 
-    async signIn(data: SignInDto): Promise<SignResponseDto> {
+    async signIn(data: SignInDto): Promise<AuthResult> {
         if (!data.identifier || !data.password) {
             throw new ValidationError(
                 'Email and password are required',
@@ -91,38 +96,39 @@ export class AuthService {
         return this.getTokens(user);
     }
 
-    async signOut(uuid: string, authorizationHeader: string): Promise<null> {
-        if (uuid.length < 1) {
-            throw new ValidationError('No uuid provided');
-        }
-        if (authorizationHeader.length < 1) {
-            throw new ValidationError('No token provided');
-        }
+    async signOut(uuid?: string, authorizationHeader?: string): Promise<null> {
+        const accessToken = authorizationHeader?.startsWith('Bearer ')
+            ? authorizationHeader.split(' ')[1]
+            : null
 
-        const user: UserEntity|null = await this.userService.getUserByUuid(uuid)
-
-        if(!user) {
-            throw new ValidationError(`Not found user with uuid: ${uuid}`);
+        if (accessToken) {
+            await this.blacklistService.addToBlacklist(accessToken)
         }
 
-        const refreshTokens: RefreshTokenEntity[] = await this.refreshTokenRepo.find({
+        if (!uuid) {
+            return null
+        }
+
+        const user = await this.userService.getUserByUuid(uuid)
+
+        if (!user) {
+            return null
+        }
+
+        const refreshTokens = await this.refreshTokenRepo.find({
             where: {
-                userId: user
-            }
-        });
+                userId: user,
+            },
+        })
 
         for (const token of refreshTokens) {
-            await token.remove();
+            await token.remove()
         }
 
-        const accessToken = authorizationHeader.split(' ')[1];
-
-        await this.blacklistService.addToBlacklist(accessToken);
-
-        return null;
+        return null
     }
 
-    async refreshToken(token: string): Promise<SignResponseDto> {
+    async refreshToken(token: string): Promise<AuthResult> {
         if(!token) {
             throw new ValidationError('No token provided');
         }
@@ -143,25 +149,30 @@ export class AuthService {
         return this.getTokens(refreshToken.userId)
     }
 
-    async getTokens(user: UserEntity): Promise<SignResponseDto> {
+    async getTokens(user: UserEntity): Promise<AuthResult> {
         const payload = {
             id: user.id,
+            uuid: user.uuid,
             name: user.name,
             email: user.email,
-            login: user.login
+            login: user.login,
         }
 
         const refreshToken = new RefreshTokenEntity()
         refreshToken.token = this.generateSecureToken()
+
         const expires = new Date()
         expires.setDate(expires.getDate() + 14)
         refreshToken.expires = expires
         refreshToken.userId = user
 
         const refreshTokenCreated = await refreshToken.save()
-
         const accessToken = await this.jwtService.signAsync(payload)
-        return new SignResponseDto(accessToken, refreshTokenCreated.token)
+
+        return {
+            response: new SignResponseDto(accessToken, refreshTokenCreated.token),
+            userUuid: user.uuid,
+        }
     }
 
     private generateSecureToken(): string {
