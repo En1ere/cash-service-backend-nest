@@ -6,7 +6,7 @@ export class BlacklistEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column({ type: 'text' })
     token: string;
 
     @CreateDateColumn({ name: "created_at" })
